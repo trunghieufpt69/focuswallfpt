@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FocusWall – Nhìn vào tường. Rồi quay lại học.</title>
+<meta name="description" content="FocusWall chặn app và trang web gây xao nhãng, nhắc việc chưa làm và bắt bạn nhìn tường. Tải cho Android và Chrome.">
+<link rel="icon" href="assets/favicon.png">
+<script>
+(function(){var t;try{t=localStorage.getItem("fw-theme")}catch(e){}
+if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";
+document.documentElement.dataset.theme=t;})();
+</script>
+<style>
+:root{--tx:#f5f6ff;--mut:rgba(245,246,255,.74);--g1:rgba(255,255,255,.2);--g2:rgba(255,255,255,.06);--ln:rgba(255,255,255,.42);
+  --bg1:#0b1020;--bg2:#1b1038;--ac:#9aa8ff;--shadow:0 24px 70px rgba(0,0,0,.45)}
+:root[data-theme=light]{--tx:#111827;--mut:rgba(17,24,39,.72);--g1:rgba(255,255,255,.88);--g2:rgba(255,255,255,.46);--ln:rgba(255,255,255,1);
+  --bg1:#eaf1ff;--bg2:#f7ebff;--ac:#4f46e5;--shadow:0 24px 60px rgba(79,70,229,.18)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+html{background:var(--bg2)}
+body{margin:0;position:relative;isolation:isolate;min-height:100vh;overflow-x:hidden;color:var(--tx);background:linear-gradient(var(--bg1),var(--bg2));
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Inter,Roboto,"Helvetica Neue",sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(560px 460px at 10% 6%,rgba(59,130,246,.5),transparent 70%),
+             radial-gradient(620px 520px at 92% 94%,rgba(168,85,247,.45),transparent 70%)}
+:root[data-theme=light] body::before{opacity:.55}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ac);outline-offset:3px;border-radius:12px}
+.wrap{width:min(1080px,92vw);margin:0 auto}
+.glass{background:linear-gradient(135deg,var(--g1),var(--g2));border:1px solid var(--ln);border-radius:28px;
+  backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);box-shadow:var(--shadow)}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:1.2rem;text-decoration:none}
+.brand img{width:40px;height:40px;border-radius:11px}
+#theme{font:inherit;cursor:pointer;color:var(--tx);padding:9px 16px;border-radius:999px;border:1px solid var(--ln);background:linear-gradient(135deg,var(--g1),var(--g2))}
+
+.hero{display:grid;gap:40px;align-items:center;padding:36px 0 64px}
+@media(min-width:900px){.hero{grid-template-columns:1.05fr .95fr;padding-top:56px}}
+h1{font-size:clamp(2.4rem,6.4vw,4.3rem);line-height:1.04;letter-spacing:-.035em;margin:0 0 18px;font-weight:800}
+.lead{font-size:1.15rem;color:var(--mut);max-width:34em;margin:0 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.95rem 1.5rem;border-radius:999px;
+  border:1px solid var(--ln);background:linear-gradient(135deg,var(--g1),var(--g2));color:var(--tx);font:inherit;font-weight:700;
+  text-decoration:none;cursor:pointer;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:transform .18s}
+.btn:hover{transform:scale(1.03)}
+.btn.primary{background:linear-gradient(135deg,#5b6cf6,#a855f7);border-color:transparent;color:#fff;box-shadow:0 10px 30px rgba(99,102,241,.45)}
+.btn.sm{padding:.6rem 1rem;font-size:.9rem;align-self:flex-start}
+
+.rise{opacity:0;transform:translateY(16px);animation:rise .85s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i,0)*120ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* Thẻ demo kịch bản chặn */
+.demo{padding:30px 26px;text-align:center;min-height:340px;display:flex;flex-direction:column;justify-content:center}
+#demo-body.swap{animation:swap .5s cubic-bezier(.2,.8,.3,1)}
+@keyframes swap{from{opacity:0;transform:scale(.93);filter:blur(8px)}}
+.demo h3{font-size:1.35rem;line-height:1.3;margin:0 0 16px;letter-spacing:-.01em}
+.demo p{margin:12px 0;color:var(--mut)}
+.demo ul{list-style:none;margin:0 0 6px;padding:0}
+.demo li{margin:8px 0;padding:10px 14px;border-radius:14px;background:var(--g1);text-align:left}
+.yn{display:flex;gap:12px;margin-top:20px}
+.yn button,.again{flex:1;font:inherit;font-weight:700;color:var(--tx);padding:13px;border-radius:20px;cursor:pointer;
+  border:1px solid var(--ln);background:linear-gradient(135deg,var(--g1),var(--g2))}
+.count{font-size:3.6rem;font-weight:800;font-variant-numeric:tabular-nums;margin:10px 0}
+.shake{animation:shake .7s linear infinite}
+@keyframes shake{0%,100%{transform:none}12%{transform:translate(-2px,1px) rotate(-.2deg)}25%{transform:translate(2px,-1px) rotate(.15deg)}
+  38%{transform:translate(-1px,-2px) rotate(.1deg)}52%{transform:translate(2px,2px) rotate(-.15deg)}66%{transform:translate(-2px,0) rotate(.2deg)}80%{transform:translate(1px,-2px) rotate(-.1deg)}}
+.demo-note{margin:14px 0 0;font-size:.82rem;color:var(--mut)}
+
+section{padding:36px 0}
+h2{font-size:clamp(1.7rem,3.6vw,2.4rem);letter-spacing:-.025em;line-height:1.15;margin:0 0 14px}
+.sub{color:var(--mut);margin:0 0 26px;max-width:40em}
+.how{display:grid;gap:16px}
+@media(min-width:800px){.how{grid-template-columns:repeat(3,1fr)}}
+.how .glass{padding:24px}
+.how b{display:block;font-size:1.1rem;margin-bottom:6px}
+.how span{color:var(--mut)}
+.step-n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;margin-bottom:12px;font-weight:800;background:var(--g1);border:1px solid var(--ln)}
+
+.dl{display:grid;gap:20px}
+@media(min-width:900px){.dl{grid-template-columns:1fr 1fr}}
+.card{padding:30px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:20px}
+.card.pick{outline:2px solid var(--ac);outline-offset:4px}
+.card h3{margin:0;font-size:1.5rem;letter-spacing:-.02em}
+.card p{margin:0;color:var(--mut)}
+.meta{font-size:.9rem;color:var(--mut)}
+.hash{font-size:.75rem;word-break:break-all;color:var(--mut);margin:0}
+ol.steps{margin:4px 0 0;padding-left:1.3em;display:grid;gap:8px}
+ol.steps li::marker{font-weight:800;color:var(--ac)}
+.note{font-size:.92rem;padding:12px 14px;border-radius:16px;background:var(--g1);border:1px solid var(--ln)}
+details{border-radius:20px;margin-bottom:12px}
+summary{cursor:pointer;font-weight:700;padding:18px 22px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:400;font-size:1.4rem;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:0;padding:0 22px 20px;color:var(--mut)}
+footer{padding:40px 0 60px;color:var(--mut);font-size:.9rem;text-align:center}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}.shake{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="#top"><img src="assets/icon.png" alt="" width="40" height="40">FocusWall</a>
+    <button id="theme" type="button" aria-label="Đổi nền sáng hoặc tối">Sáng / Tối</button>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <h1 class="rise" style="--i:0">Nhìn vào tường.<br>Rồi quay lại học.</h1>
+        <p class="lead rise" style="--i:1">FocusWall canh giúp bạn những app và trang web hay kéo bạn đi mất. Mở chúng ra, bạn sẽ bị hỏi lại, bị nhắc việc chưa làm, và nếu vẫn cố vào thì phải nhìn tường.</p>
+        <div class="cta rise" style="--i:2">
+          <a class="btn primary" href="#android">Tải APK cho Android</a>
+          <a class="btn" href="#chrome">Cài cho Chrome</a>
+        </div>
+        <p class="meta rise" style="--i:3;margin-top:18px">Làm cho học sinh lớp 9 và lớp 12 đang ôn thi. Không quảng cáo, không gửi dữ liệu đi đâu.</p>
+      </div>
+      <div class="demo glass rise" style="--i:3" aria-live="polite">
+        <div id="demo-body"></div>
+        <p class="demo-note">Bản thử trên trang này: nhìn tường 10 giây thay vì 10 phút.</p>
+      </div>
+    </div>
+
+    <section aria-labelledby="how-h">
+      <h2 id="how-h">Chuyện gì xảy ra khi bạn mở trang bị chặn?</h2>
+      <p class="sub">Giọng điệu nhẹ nhàng nhưng không dễ dãi. Cả ba bước đều bạn tự chọn danh sách và thời gian.</p>
+      <div class="how">
+        <div class="glass"><span class="step-n">1</span><b>Hỏi lại bạn</b><span>Màn hình mờ đi và hiện câu hỏi: bạn có chắc bạn muốn vào không? Chọn “Không” là thoát ngay.</span></div>
+        <div class="glass"><span class="step-n">2</span><b>Nhắc việc chưa làm</b><span>Danh sách việc cần làm của bạn hiện ra. Hết việc thì được vào. Còn việc thì bạn bị hỏi thêm lần nữa.</span></div>
+        <div class="glass"><span class="step-n">3</span><b>Nhìn tường</b><span>Vẫn muốn vào thì đồng hồ đếm ngược chạy, mặc định 10 phút. Hết giờ, câu hỏi quay lại.</span></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="dl-h">
+      <h2 id="dl-h">Tải FocusWall</h2>
+      <p class="sub">Một cho điện thoại Android, một cho trình duyệt trên máy tính.</p>
+      <p class="note" id="ios" hidden>Bạn đang dùng iPhone hoặc iPad. FocusWall chưa có bản cho iOS, hãy dùng extension trên máy tính nhé.</p>
+      <p class="note" id="ff" hidden>Extension này dành cho trình duyệt nhân Chromium: Chrome, Edge, Cốc Cốc, Brave. Firefox và Safari chưa được hỗ trợ.</p>
+      <div class="dl" style="margin-top:16px">
+
+        <article class="glass card" id="android">
+          <h3>Android</h3>
+          <p>Bản thử nghiệm v0.0.1 · file APK · <span class="meta">12,6 MB</span></p>
+          <a class="btn primary" href="downloads/Focuswall_demo_v0_0_1.apk" download>Tải APK xuống</a>
+          <ol class="steps">
+            <li>Mở file vừa tải. Nếu máy hỏi, cho phép cài ứng dụng từ nguồn này.</li>
+            <li>Google Play Protect có thể báo chặn, vì app chưa lên Google Play và dùng quyền Trợ năng. Chọn “Cài đặt mà không quét” hoặc tạm tắt Play Protect rồi bật lại sau.</li>
+            <li>Mở FocusWall, làm theo các “Bước” trên Menu để cấp quyền: Truy cập sử dụng, Hiển thị trên ứng dụng khác, Thông báo.</li>
+            <li>Bật công tắc “Bảo vệ”, rồi chọn app cần chặn.</li>
+          </ol>
+          <p class="note">Máy Oppo, Xiaomi, Vivo, Samsung hay tự tắt app chạy nền. Trong app có màn hình “Quyền và cài đặt theo máy” để mở đúng trang cần bật.</p>
+          <p class="hash">SHA-256: 2b7bc7bb6f6ea3a0426112a685b62832d36bb05f53fee736ff47af3ae9177ff9</p>
+          <button class="btn sm" type="button" data-copy="2b7bc7bb6f6ea3a0426112a685b62832d36bb05f53fee736ff47af3ae9177ff9" data-label="Sao chép mã SHA-256">Sao chép mã SHA-256</button>
+        </article>
+
+        <article class="glass card" id="chrome">
+          <h3>Chrome trên máy tính</h3>
+          <p>Extension v1.0 · file zip · <span class="meta">40 KB</span></p>
+          <a class="btn primary" id="ext-main" href="downloads/FocusWall-Extension.zip" download>Tải extension xuống</a>
+          <div id="manual">
+            <p class="note" id="why">Chrome không cho trang web tự cài extension ngoài Chrome Web Store, nên cần thêm 3 bước tay, chừng 1 phút.</p>
+            <ol class="steps" style="margin-top:14px">
+              <li>Tải file zip ở trên, rồi <b>giải nén</b> ra một thư mục.</li>
+              <li>Mở trang <b>chrome://extensions</b> (bấm nút bên dưới để sao chép, rồi dán vào thanh địa chỉ) và bật <b>Chế độ dành cho nhà phát triển</b>.</li>
+              <li>Bấm <b>Tải tiện ích đã giải nén</b>, chọn thư mục <b>FocusWall-Extension</b> (thư mục có file manifest.json). Ghim FocusWall lên thanh công cụ là xong.</li>
+            </ol>
+            <button class="btn sm" type="button" data-copy="chrome://extensions" data-label="Sao chép chrome://extensions" style="margin-top:14px">Sao chép chrome://extensions</button>
+          </div>
+          <p class="note">Edge dùng <b>edge://extensions</b>, Cốc Cốc dùng <b>coccoc://extensions</b>. Các tab đang mở cần tải lại (F5) mới bị chặn.</p>
+          <p class="hash">SHA-256: 4f479047ad222aa1a4cfaae0844902092999a75fd57d545a1003943da7c27327</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="faq-h">
+      <h2 id="faq-h">Hay được hỏi</h2>
+      <details class="glass"><summary>Vì sao điện thoại cảnh báo khi cài?</summary><p>Vì app cài từ file APK chứ chưa qua Google Play. Android và Play Protect cảnh báo mọi app như vậy, nhất là app dùng quyền Trợ năng. Hãy chỉ cài khi bạn tin nguồn tải. Bạn có thể đối chiếu mã SHA-256 ở trên với file đã tải.</p></details>
+      <details class="glass"><summary>FocusWall có đọc dữ liệu của tôi không?</summary><p>Không. Quyền Trợ năng chỉ giúp app biết tên ứng dụng đang mở, không đọc được chữ hay nội dung trên màn hình. Danh sách chặn và việc cần làm nằm ngay trên thiết bị của bạn. Extension chỉ so tên trang web với danh sách bạn chọn.</p></details>
+      <details class="glass"><summary>Vì sao extension không tự cài được?</summary><p>Từ lâu Chrome đã bỏ việc cài extension trực tiếp từ website, chỉ còn Chrome Web Store mới cài được bằng một cú bấm. Khi FocusWall có trên Web Store, nút tải ở trang này sẽ chuyển thành “Thêm vào Chrome”.</p></details>
+      <details class="glass"><summary>Tôi có thể tắt FocusWall không?</summary><p>Có. Đây là công cụ nhắc nhở ý chí, không phải khoá cứng. Bạn vẫn tự tắt công tắc “Bảo vệ” hoặc gỡ extension bất cứ lúc nào.</p></details>
+    </section>
+  </main>
+
+  <footer>FocusWall · Nhẹ nhàng, nghiêm khắc, thúc giục.</footer>
+</div>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+
+  // Dán link Chrome Web Store vào đây khi đã đăng extension. Có link thì nút sẽ thành "Thêm vào Chrome".
+  var STORE_URL="";
+  if(STORE_URL){
+    var b=$("#ext-main");b.href=STORE_URL;b.removeAttribute("download");b.textContent="Thêm vào Chrome";
+    b.target="_blank";b.rel="noopener";
+    $("#why").textContent="Cài bằng một cú bấm từ Chrome Web Store. Nếu muốn cài tay bằng file zip, làm theo các bước bên dưới.";
+  }
+
+  // Theme
+  $("#theme").onclick=function(){
+    var t=document.documentElement.dataset.theme==="light"?"dark":"light";
+    document.documentElement.dataset.theme=t;
+    try{localStorage.setItem("fw-theme",t)}catch(e){}
+  };
+
+  // Gợi ý đúng bản theo thiết bị
+  var ua=navigator.userAgent;
+  if(/Android/i.test(ua)) $("#android").classList.add("pick");
+  else if(/iPhone|iPad|iPod/i.test(ua)) $("#ios").hidden=false;
+  else $("#chrome").classList.add("pick");
+  if(/Firefox\//.test(ua)||(/Safari\//.test(ua)&&!/Chrome\/|Chromium\/|Edg\/|OPR\//.test(ua)&&!/Android/i.test(ua)&&!/iPhone|iPad|iPod/i.test(ua))) $("#ff").hidden=false;
+
+  // Nút sao chép
+  document.querySelectorAll("[data-copy]").forEach(function(b){
+    b.onclick=function(){
+      var v=b.dataset.copy;
+      var done=function(){b.textContent="Đã sao chép ✓";setTimeout(function(){b.textContent=b.dataset.label},1800)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(done,function(){window.prompt("Sao chép:",v)})}
+      else window.prompt("Sao chép:",v);
+    };
+  });
+
+  // Thẻ demo kịch bản chặn
+  var demo=$("#demo-body"),timer=null;
+  var todos=["Ôn Toán chương 3","Làm đề Văn","Học 20 từ tiếng Anh"];
+  var YN='<div class="yn"><button type="button" data-a="no">Không</button><button type="button" data-a="yes">Có</button></div>';
+  function bind(m){demo.querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){m[b.dataset.a]()}})}
+  function view(h,after){
+    clearInterval(timer);
+    demo.classList.remove("swap");void demo.offsetWidth;demo.classList.add("swap");
+    demo.innerHTML=h;if(after)after();
+  }
+  function ask(){view("<h3>Bạn có chắc bạn muốn vào không?</h3>"+YN,function(){bind({no:good,yes:more})})}
+  function good(){view('<h3>Tốt. Quay lại học đi.</h3><button class="again" type="button" data-a="again">Xem lại từ đầu</button>',function(){bind({again:ask})})}
+  function more(){
+    view("<h3>Thật đấy à? Bạn còn những việc này chưa làm:</h3><ul>"+todos.map(function(t){return"<li>"+t+"</li>"}).join("")+"</ul><p>Bạn còn những việc này chưa làm, bạn đã chắc chắn tiếp tục không?</p>"+YN,
+      function(){bind({no:good,yes:wall})});
+  }
+  function wall(){
+    var n=10;
+    view('<div class="shake"><h3>Cho bạn suy nghĩ lại vì còn việc làm, hãy nhìn vào tường đi trong thời gian này:</h3><div class="count" id="cnt">00:10</div></div>',function(){
+      timer=setInterval(function(){n--;$("#cnt").textContent="00:"+String(n).padStart(2,"0");if(n<=0)more()},1000);
+    });
+  }
+  ask();
+})();
+</script>
+</body>
+</html>
